@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:api-platform-gw="http://www.mulesoft.org/schema/mule/api-platform-gw" xmlns:ldap="http://www.mulesoft.org/schema/mule/ldap"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/ldap http://www.mulesoft.org/schema/mule/ldap/current/mule-ldap.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd">
+
+	
+	<http:listener-config name="activedirectory-sys-httpListenerConfig" host="0.0.0.0" port="${https.port}" doc:name="HTTP Listener Configuration" protocol="HTTPS" >
+        <tls:context>
+            <tls:key-store type="jks" path="keystore.jks" keyPassword="${key.password}" password="${keystore.password}"/>
+        </tls:context>
+    	</http:listener-config>
+	
+    <apikit:config name="activedirectory-sys-config" raml="activedirectory-sys.raml" consoleEnabled="false" doc:name="Router" keepRamlBaseUri="false"/>
+    <context:property-placeholder location="env-${mule.env}.properties"/>
+    
+        <ldap:config name="LDAP_Read" authDn="${ldap.principal.dn}"
+		authPassword="${ldap.principal.password}" url="ldap://${ldap.host}:${ldap.port}"
+		doc:name="LDAP">
+		<reconnect />
+	</ldap:config>
+    <api-platform-gw:api apiName="moc.mule.activedirectory-sys" version="1.0-${mule.env}" flowRef="activedirectory-sys-main" create="true" apikitRef="activedirectory-sys-config" doc:name="API Autodiscovery"/>
+    <ldap:config name="Update_LDAP__Configuration" authDn="${ldap.principal.dn}" authPassword="${ldap.principal.password}" url="ldap://${ldap.eld.host}:${ldap.eld.write.port}" doc:name="LDAP: Configuration"/>
+    
+
+
+</mule>

@@ -1,0 +1,55 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/9a1bedd6-cf07-424b-ac08-c14eedc15b68
+title: moc.mule.activedirectory-sys
+version: "1.0-${mule.env}"
+securitySchemes: 
+  basicAuth:
+    description: This API is secured by Basic Authentication
+    type: Basic Authentication
+    
+securedBy: basicAuth
+/checkemployee:
+  get:
+    description: This helps to get user information
+    queryParameters:
+      email:
+        type: string
+        description: email
+        required: true
+      empId:
+        type: string
+        description: employeeId
+        required: true
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/Response.json
+      500:
+        body:
+          application/json:
+            example: !include examples/errors/errorResponse.json
+      404:
+        body: 
+          application/json:
+            example: !include examples/errors/notfoundResponse.json  
+/employees:
+  get:
+    description: This helps to get user information
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/Response.json
+      500:
+        body:
+          application/json:
+            example: !include examples/errors/errorResponse.json
+      404:
+        body: 
+          application/json:
+            example: !include examples/errors/notfoundResponse.json
+documentation: 
+    - 
+        title: Active Directory System API
+        content: The  API helps to retrieve user Information from Active Directory.
